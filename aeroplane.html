@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Aviator Red Black</title>
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    font-family:Arial;
+    background: radial-gradient(circle at top,#1a0000,#000000);
+}
+
+/* CANVAS */
+canvas{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:#000000;
+}
+
+/* MULTIPLIER */
+#multiplier{
+    position:absolute;
+    top:18%;
+    width:100%;
+    text-align:center;
+    font-size:80px;
+    color:#ff2b2b;
+    font-weight:bold;
+    text-shadow:0 0 25px red;
+}
+
+/* STATUS */
+#status{
+    position:absolute;
+    top:28%;
+    width:100%;
+    text-align:center;
+    color:white;
+    opacity:0.8;
+    letter-spacing:2px;
+}
+
+/* PLANE */
+#plane{
+    position:absolute;
+    width:140px;
+    left:100px;
+    top:500px;
+    filter: drop-shadow(0 0 15px red);
+}
+
+/* BUTTONS */
+.controls{
+    position:absolute;
+    bottom:40px;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:20px;
+}
+
+button{
+    padding:14px 35px;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:14px;
+}
+
+#start{
+    background:#ff0000;
+    color:black;
+    box-shadow:0 0 20px red;
+}
+
+#cashout{
+    background:#000;
+    color:#ff2b2b;
+    border:1px solid red;
+    box-shadow:0 0 15px red;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="trail"></canvas>
+
+<div id="multiplier">0.00x</div>
+<div id="status">READY</div>
+
+<img id="plane" src="1.png">
+
+<div class="controls">
+    <button id="start">START</button>
+    <button id="cashout">CASH OUT</button>
+</div>
+
+<script>
+
+const canvas = document.getElementById("trail");
+const ctx = canvas.getContext("2d");
+
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.onresize = resize;
+
+/* CRASH SEQUENCE */
+let crashList = [0.30,0.30,1.00,0.50,1.50];
+let i = 0;
+
+/* GAME STATE */
+let run = false;
+let cashed = false;
+let m = 0;
+let crashPoint;
+let loop;
+
+/* POSITION */
+let x = 100;
+let y = 500;
+
+/* PATH */
+let path = [];
+
+const plane = document.getElementById("plane");
+const text = document.getElementById("multiplier");
+const status = document.getElementById("status");
+
+document.getElementById("start").onclick = startGame;
+document.getElementById("cashout").onclick = cashout;
+
+/* RESET */
+function reset(){
+
+    clearInterval(loop);
+
+    run = false;
+    cashed = false;
+
+    m = 0;
+    x = 100;
+    y = 500;
+
+    path = [];
+
+    plane.style.left = x+"px";
+    plane.style.top = y+"px";
+    plane.style.transform = "rotate(0deg)";
+
+    text.innerText = "0.00x";
+    status.innerText = "READY";
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+/* DRAW TRAIL */
+function draw(){
+
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.beginPath();
+    ctx.strokeStyle = "#ff2b2b";
+    ctx.lineWidth = 3;
+
+    for(let p of path){
+        ctx.lineTo(p.x,p.y);
+    }
+
+    ctx.stroke();
+}
+
+function startGame(){
+
+    if(run) return;
+
+    reset();
+    run = true;
+
+    crashPoint = crashList[i];
+    i++;
+    if(i>=crashList.length) i=0;
+
+    status.innerText = "TAKING OFF 🚀";
+
+    loop = setInterval(()=>{
+
+        if(cashed) return;
+
+        m += 0.01;
+        m = +m.toFixed(2);
+
+        text.innerText = m+"x";
+        status.innerText = "FLYING ✈️";
+
+        /* smooth movement */
+        x += 3;
+        y -= 1.5;
+
+        plane.style.left = x+"px";
+        plane.style.top = y+"px";
+
+        path.push({x:x+60,y:y+30});
+        draw();
+
+        if(m >= crashPoint){
+            crash();
+        }
+
+    },70);
+}
+
+function cashout(){
+
+    if(!run || cashed) return;
+
+    cashed = true;
+
+    clearInterval(loop);
+    run = false;
+
+    status.innerText = "CASHED 💰";
+
+    setTimeout(reset,1500);
+}
+
+function crash(){
+
+    clearInterval(loop);
+    run = false;
+
+    plane.style.transform = "rotate(180deg)";
+    status.innerText = "CRASH 💥";
+
+    setTimeout(reset,1500);
+}
+
+</script>
+
+</body>
+</html>

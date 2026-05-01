@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Rana Aeroplane Trader</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background: radial-gradient(circle at top,#1a0000,#000000);
+    color:white;
+    text-align:center;
+}
+
+/* HEADER */
+.header{
+    padding:25px 10px;
+}
+
+.logo{
+    font-size:30px;
+    font-weight:bold;
+    color:#ff2b2b;
+    text-shadow:0 0 25px red;
+}
+
+.sub{
+    opacity:0.7;
+    margin-top:5px;
+}
+
+/* PRICE TAG */
+.price{
+    margin-top:10px;
+    display:inline-block;
+    padding:8px 15px;
+    border:1px solid #ff2b2b;
+    border-radius:8px;
+    color:#ff2b2b;
+    font-weight:bold;
+    box-shadow:0 0 15px red;
+}
+
+/* CONTAINER */
+.container{
+    display:flex;
+    justify-content:center;
+    gap:25px;
+    margin-top:60px;
+    flex-wrap:wrap;
+}
+
+/* CARD */
+.card{
+    width:240px;
+    height:200px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,0,0,0.3);
+    border-radius:15px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    transition:0.3s;
+    box-shadow:0 0 15px rgba(255,0,0,0.2);
+}
+
+.card:hover{
+    transform:scale(1.07);
+    box-shadow:0 0 30px red;
+}
+
+/* TEXT */
+.card h2{
+    color:#ff2b2b;
+    margin:5px 0;
+}
+
+.card p{
+    font-size:13px;
+    opacity:0.8;
+    padding:0 10px;
+    line-height:1.4;
+}
+
+/* BUTTON */
+.play{
+    margin-top:10px;
+    padding:8px 18px;
+    border:none;
+    border-radius:8px;
+    background:red;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* TAG */
+.tag{
+    font-size:12px;
+    margin-top:6px;
+    color:#00ff88;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">✈ SkyBet Games</div>
+    <div class="sub">Choose Your Game & Win Big</div>
+
+    <div class="price">💰 100 RS PER GAME PLAY</div>
+</div>
+
+<div class="container">
+
+    <!-- AVIATOR -->
+    <div class="card" onclick="openGame('aeroplane.html')">
+        <h2>✈ Aviator Crash</h2>
+        <p>Cashout before crash & multiply your reward in real time.</p>
+        <div class="tag">🔥 High Risk • High Reward</div>
+        <button class="play">PLAY NOW</button>
+    </div>
+
+    <!-- CARDS -->
+    <div class="card" onclick="openGame('card.html')">
+        <h2>🃏 Lucky Cards</h2>
+        <p>Pick a card & discover your hidden reward instantly.</p>
+        <div class="tag">🎯 Simple & Fun</div>
+        <button class="play">PLAY NOW</button>
+    </div>
+
+    <!-- SPIN -->
+    <div class="card" onclick="openGame('spin.html')">
+        <h2>🎰 Lucky Spin</h2>
+        <p>Spin the wheel & test your luck for massive rewards.</p>
+        <div class="tag">🍀 Pure Luck Game</div>
+        <button class="play">PLAY NOW</button>
+    </div>
+
+</div>
+
+<script>
+function openGame(page){
+    window.location.href = page;
+}
+</script>
+
+</body>
+</html>

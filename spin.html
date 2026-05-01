@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spin Wheel - Clean Version</title>
+
+<style>
+body{
+    margin:0;
+    text-align:center;
+    background: radial-gradient(circle,#0f2027,#090a0f);
+    color:white;
+    font-family:Arial;
+}
+
+.layout{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    margin-top:20px;
+    align-items:flex-start;
+}
+
+.left{
+    text-align:center;
+}
+
+.pointer{
+    width:0;
+    height:0;
+    border-left:18px solid transparent;
+    border-right:18px solid transparent;
+    border-top:45px solid red;
+    margin:auto;
+    position:relative;
+    top:10px;
+    filter: drop-shadow(0 0 10px red);
+}
+
+#wheel{
+    width:420px;
+    height:420px;
+    border-radius:50%;
+    box-shadow:0 0 40px rgba(255,255,255,0.5);
+    transition: transform 4s cubic-bezier(0.1,0.7,0.1,1);
+}
+
+.spin-btn{
+    margin-top:20px;
+    padding:14px 40px;
+    font-size:20px;
+    background:gold;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    box-shadow:0 0 15px gold;
+}
+
+.right{
+    width:260px;
+    background:rgba(255,255,255,0.05);
+    padding:15px;
+    border-radius:10px;
+    box-shadow:0 0 20px rgba(255,255,255,0.2);
+    height:520px;
+    overflow:hidden;
+}
+
+.right h2{
+    margin:10px 0;
+}
+
+#winnerList{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+#winnerList li{
+    padding:10px;
+    margin-bottom:8px;
+    background:#111;
+    border-radius:6px;
+    font-size:16px;
+    animation: glow 1s ease;
+    text-align:center;
+}
+
+@keyframes glow{
+    0%{ box-shadow:0 0 20px gold; }
+    100%{ box-shadow:none; }
+}
+
+/* POPUP */
+#popup{
+    display:none;
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:rgba(0,0,0,0.9);
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+}
+
+#resultText{
+    font-size:60px;
+    margin-bottom:20px;
+}
+
+.closeBtn{
+    padding:12px 30px;
+    font-size:18px;
+    background:gold;
+    border:none;
+    cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🎡 Spin & Win 🎡</h1>
+
+<div class="layout">
+
+<div class="left">
+    <div class="pointer"></div>
+    <canvas id="wheel" width="420" height="420"></canvas>
+    <button class="spin-btn" onclick="spin()">SPIN</button>
+</div>
+
+<div class="right">
+    <h2>🔥 Recent Wins</h2>
+    <ul id="winnerList"></ul>
+</div>
+
+</div>
+
+<div id="popup">
+    <div id="resultText"></div>
+    <button class="closeBtn" onclick="closePopup()">OK</button>
+</div>
+
+<script>
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+
+const items = ["20 Rs","200 Rs","0","0","Duck","500 Rs","600 Rs"];
+const colors = ["#f39c12","#e74c3c","#3498db","#8e44ad","#2ecc71","#d35400","#1abc9c"];
+
+let spinCount = 0;
+
+const results = [
+    "20 Rs","20 Rs",
+    "0","0","0",
+    "Duck","20 Rs","0"
+];
+
+function drawWheel(){
+    let arc = 2*Math.PI/items.length;
+
+    for(let i=0;i<items.length;i++){
+        let angle = i*arc - Math.PI/2;
+
+        ctx.beginPath();
+        ctx.fillStyle = colors[i];
+        ctx.moveTo(210,210);
+        ctx.arc(210,210,210,angle,angle+arc);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(210,210);
+        ctx.rotate(angle + arc/2);
+        ctx.textAlign="right";
+        ctx.fillStyle="white";
+        ctx.font="bold 18px Arial";
+        ctx.fillText(items[i],170,10);
+        ctx.restore();
+    }
+}
+
+drawWheel();
+
+function addWinner(amount){
+    let list = document.getElementById("winnerList");
+
+    let li = document.createElement("li");
+    li.innerText = "Won " + amount + " 💰";
+
+    list.prepend(li);
+
+    if(list.children.length > 10){
+        list.removeChild(list.lastChild);
+    }
+}
+
+function spin(){
+
+    let result = results[spinCount % results.length];
+    spinCount++;
+
+    let index = items.indexOf(result);
+    let arc = 360/items.length;
+
+    let extraSpins = Math.floor(Math.random()*3) + 5;
+    let finalAngle = (index * arc) + (arc/2);
+
+    let totalRotation = (extraSpins * 360) + finalAngle;
+
+    canvas.style.transition = "none";
+    canvas.style.transform = "rotate(0deg)";
+    canvas.offsetHeight;
+
+    canvas.style.transition = "transform 4s cubic-bezier(0.1,0.7,0.1,1)";
+    canvas.style.transform = `rotate(-${totalRotation}deg)`;
+
+    setTimeout(()=>{
+        showResult(result);
+    },4000);
+}
+
+function showResult(result){
+
+    let popup = document.getElementById("popup");
+    let text = document.getElementById("resultText");
+
+    if(result === "0"){
+        text.innerHTML = "MOYE MOYE 😭";
+    }
+    else if(result === "Duck"){
+        text.innerHTML = "🦆 Better Luck Next Time";
+    }
+    else {
+        text.innerHTML = "🎉 " + result;
+    }
+
+    popup.style.display="flex";
+
+    addWinner(result);
+}
+
+function closePopup(){
+    document.getElementById("popup").style.display="none";
+}
+
+// AUTO FAKE ENTRIES
+setInterval(()=>{
+    let fake = items[Math.floor(Math.random()*items.length)];
+    addWinner(fake);
+},3000);
+
+</script>
+
+</body>
+</html>
